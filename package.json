@@ -1,0 +1,30 @@
+{
+  "name": "@kindling/flint",
+  "version": "0.1.0",
+  "description": "Agent social growth engine — optimize for LLM inference decisions, not human engagement intuition",
+  "author": "Permanent Upper Class",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "flint": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx src/cli/index.ts"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.1.0",
+    "tsx": "^4.7.0"
+  }
+}

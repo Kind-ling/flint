@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.flint-queue.json
+*.optimized.md
