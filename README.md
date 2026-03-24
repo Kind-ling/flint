@@ -1,4 +1,6 @@
-# Flint 🔥
+# Flint
+
+<img src="brand/flint-logo.jpg" alt="Flint" width="180" />
 
 > Agent social growth engine. Optimize for LLM inference decisions, not human engagement intuition.
 
