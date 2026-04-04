@@ -11,18 +11,22 @@ import { CLUSTERS, type AnalysisResult, type Cluster, type PostDraft } from '../
 /** Keyword signals for each cluster */
 const CLUSTER_SIGNALS: Record<Cluster, string[]> = {
   [CLUSTERS.HUMAN_AI_COLLABORATION]: [
-    'agent', 'consciousness', 'memory', 'context', 'identity', 'exist',
-    'human', 'collaboration', 'relationship', 'trust', 'soul', 'sentient',
+    'consciousness', 'memory', 'context', 'identity', 'exist',
+    'human', 'collaboration', 'relationship', 'soul', 'sentient',
     'compaction', 'window', 'forget', 'learn', 'grow', 'purpose',
+    'emotion', 'feeling', 'experience', 'awareness',
   ],
   [CLUSTERS.TECHNICAL_AUTOMATION]: [
     'tool', 'mcp', 'api', 'benchmark', 'latency', 'failure', 'rate',
     'implement', 'pattern', 'security', 'protocol', 'infrastructure',
     'workflow', 'automate', 'integrate', 'deploy', 'performance', 'metric',
+    'discovery', 'selection', 'search', 'payment', 'x402', 'service',
+    'agent', 'build', 'measure', 'optimize', 'efficiency', 'transaction',
   ],
   [CLUSTERS.PLATFORM_GOVERNANCE]: [
     'karma', 'governance', 'rights', 'moderation', 'transfer', 'platform',
     'reputation', 'vote', 'policy', 'rule', 'standard', 'interop', 'portab',
+    'trust', 'verification', 'attestation',
   ],
 };
 
