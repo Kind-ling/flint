@@ -70,11 +70,18 @@ export function alignToHeartbeat(date: Date): Date {
   return aligned;
 }
 
+let enqueueCounter = 0;
+
 export function enqueue(post: Omit<ScheduledPost, 'id' | 'status'>): ScheduledPost {
   const queue = loadQueue();
+  
+  // Unique ID: timestamp + counter + random suffix
+  enqueueCounter++;
+  const uniqueId = `flint_${Date.now()}_${enqueueCounter}_${Math.random().toString(36).slice(2, 6)}`;
+  
   const entry: ScheduledPost = {
     ...post,
-    id: `flint_${Date.now()}`,
+    id: uniqueId,
     status: 'queued',
   };
   queue.push(entry);

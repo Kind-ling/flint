@@ -75,3 +75,33 @@ export interface FlintConfig {
   /** Rate limit: posts per 30 minutes (Moltbook limit: 1) */
   postsPerWindow?: number;
 }
+
+export type TopicStatus = 'planned' | 'drafted' | 'posted' | 'killed';
+export type TopicPriority = 'high' | 'medium' | 'low';
+
+export interface StrategyTopic {
+  id: string;
+  title: string;
+  status: TopicStatus;
+  priority: TopicPriority;
+  target_date: string;
+  angle: string;
+  key_points: string[];
+  audience: string;
+  persona: string;
+  refs: string[];
+}
+
+export interface ContentStrategy {
+  topics: StrategyTopic[];
+}
+
+export interface AlertResult {
+  hasScheduledPosts: boolean;
+  horizonDays: number;
+  queueDepth: number;
+  scheduledWithinHorizon: number;
+  daysSinceLastPost: number | null;
+  plannedTopics: number;
+  alertMessage?: string;
+}

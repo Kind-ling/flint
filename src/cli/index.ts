@@ -14,6 +14,9 @@ import * as fs from 'fs';
 import { analyze } from '../analyzer/index.js';
 import { optimize } from '../optimizer/index.js';
 import { enqueue, listQueue, alignToHeartbeat, getNextAvailableSlot } from '../scheduler/index.js';
+import { processNewDrafts, getDuePosts } from '../heartbeat/index.js';
+import { runAlert } from '../commands/alert.js';
+import { runDraft } from '../commands/draft.js';
 
 const program = new Command();
 
@@ -140,4 +143,88 @@ program
     });
   });
 
-program.parse();
+// ── heartbeat ─────────────────────────────────────────────────────────────────
+
+program
+  .command('heartbeat')
+  .description('Process new drafts and check for due posts (run from KindSoul heartbeat)')
+  .option('--drafts <dir>', 'Drafts directory', process.env['FLINT_DRAFTS_DIR'] ?? '.')
+  .option('--submolt <submolt>', 'Default submolt', 'agentinfra')
+  .option('--max <n>', 'Max drafts to process per run', '1')
+  .action((opts: { drafts: string; submolt: string; max: string }) => {
+    console.log('🔥 Flint Heartbeat\n');
+
+    // Check for due posts
+    const due = getDuePosts();
+    if (due.length > 0) {
+      console.log(`📤 Due posts (${due.length}):`);
+      due.forEach(p => {
+        console.log(`  - ${p.id}: "${p.title}" → m/${p.submolt}`);
+      });
+      console.log('');
+    }
+
+    // Process new drafts
+    const result = processNewDrafts(opts.drafts, opts.submolt, parseInt(opts.max, 10));
+
+    if (result.processed.length > 0) {
+      console.log(`✅ Processed (${result.processed.length}):`);
+      result.processed.forEach(p => {
+        console.log(`  - ${p.file} → scheduled for ${new Date(p.scheduledFor).toLocaleString()}`);
+      });
+    }
+
+    if (result.skipped.length > 0) {
+      console.log(`⏭️  Skipped: ${result.skipped.length} files`);
+    }
+
+    if (result.errors.length > 0) {
+      console.log(`❌ Errors:`);
+      result.errors.forEach(e => console.log(`  - ${e.file}: ${e.error}`));
+    }
+
+    console.log(`\n📋 Queue size: ${result.queueSize}`);
+  });
+
+// ── due ───────────────────────────────────────────────────────────────────────
+
+program
+  .command('due')
+  .description('List posts that are due to be published')
+  .action(() => {
+    const due = getDuePosts();
+    if (due.length === 0) {
+      console.log('No posts due.');
+      return;
+    }
+    console.log(`\n🔥 Due Posts (${due.length})\n`);
+    due.forEach(p => {
+      console.log(`  ${p.id}`);
+      console.log(`  "${p.title}"`);
+      console.log(`  → m/${p.submolt}\n`);
+    });
+  });
+
+// ── alert ─────────────────────────────────────────────────────────────────────
+
+program
+  .command('alert')
+  .description('Alert when the queue has no posts scheduled inside the horizon window')
+  .option('--horizon-days <days>', 'Alert horizon in days', '3')
+  .action((opts: { horizonDays: string }) => {
+    runAlert(parseInt(opts.horizonDays, 10));
+  });
+
+// ── draft ─────────────────────────────────────────────────────────────────────
+
+program
+  .command('draft')
+  .description('Generate a raw draft from content-strategy.md')
+  .option('--topic <topicId>', 'Draft a specific topic ID')
+  .option('--confirm', 'Require confirmation before saving the draft')
+  .option('--dry-run', 'Preview the draft without writing files')
+  .action(async (opts: { topic?: string; confirm?: boolean; dryRun?: boolean }) => {
+    await runDraft(opts);
+  });
+
+void program.parseAsync();
